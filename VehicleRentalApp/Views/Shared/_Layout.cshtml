@@ -9,7 +9,11 @@
     <link rel="stylesheet" href="~/VehicleRentalApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
+    <header class="bg-dark text-white p-3 mb-4">
+        <div class="container">
+            <h1>UBB Sport Equipment Rental System</h1>
+            <p class="lead">Zarządzaj swoimi wypożyczniami sprzętów sportowych.</p>
+        </div>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VehicleRentalApp</a>
@@ -36,9 +40,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="bg-light text-center text-muted py-4 mt-4 border-top">
         <div class="container">
-            &copy; 2025 - VehicleRentalApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <p>&copy; @DateTime.Now.Year - VehicleRentalApp</p>
+            <p>Kontakt: kontakt@rental.pl | tel. 123 456 789</p>
+            <p>Adres: ul. Willowa 2, 43-300 Bielsko-Biała</p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
