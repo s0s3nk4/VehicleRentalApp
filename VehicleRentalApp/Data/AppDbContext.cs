@@ -20,22 +20,30 @@ namespace VehicleRentalApp.Data
             modelBuilder.Entity<Equipment>()
                 .HasOne(e => e.EquipmentType)
                 .WithMany(et => et.Equipments)
-                .HasForeignKey(e => e.EquipmentTypeId);
+                .HasForeignKey(e => e.EquipmentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Equipment>()
+                .Property(e => e.PricePerDay)
+                .HasPrecision(18, 2);
 
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Equipment)
                 .WithMany(e => e.Reservations)
-                .HasForeignKey(r => r.EquipmentId);
+                .HasForeignKey(r => r.EquipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Rental>()
                 .HasOne(r => r.Equipment)
                 .WithMany(e => e.Rentals)
-                .HasForeignKey(r => r.EquipmentId);
+                .HasForeignKey(r => r.EquipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Rental>()
                 .HasOne(r => r.RentalPoint)
                 .WithMany(rp => rp.Rentals)
-                .HasForeignKey(r => r.RentalPointId);
+                .HasForeignKey(r => r.RentalPointId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
