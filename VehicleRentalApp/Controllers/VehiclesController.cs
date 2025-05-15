@@ -6,32 +6,32 @@ namespace VehicleRentalApp.Controllers
 {
     public class VehiclesController : Controller
     {
-        private static readonly List<Vehicle> _vehicles = new()
+        private static readonly List<Equipment> _vehicles = new()
         {
-            new Vehicle {
+            new Equipment {
                 Id = 1,
                 Brand = "Toyota",
-                Model = "Camry",
+                Name = "Camry",
                 Type = "Sedan",
                 Year = 2020,
                 Description = "Niezawodny i oszczędny sedan",
                 PricePerDay = 50.00m,
                 ImageUrl = "/images/camry.jpg"
             },
-            new Vehicle {
+            new Equipment {
                 Id = 2,
                 Brand = "Ford",
-                Model = "F-150",
+                Name = "F-150",
                 Type = "Truck",
                 Year = 2021,
                 Description = "Mocny i wszechstronny pickup",
                 PricePerDay = 70.00m,
                 ImageUrl = "/images/f150.jpg"
             },
-            new Vehicle {
+            new Equipment {
                 Id = 3,
                 Brand = "Honda",
-                Model = "Civic",
+                Name = "Civic",
                 Type = "Hatchback",
                 Year = 2019,
                 Description = "Stylowy i oszczędny hatchback",
@@ -45,7 +45,7 @@ namespace VehicleRentalApp.Controllers
             {
                 Id = v.Id,
                 Brand = v.Brand,
-                Model = v.Model,
+                Name = v.Name,
                 Type = v.Type,
                 PricePerDay = v.PricePerDay,
                 ImageUrl = v.ImageUrl
@@ -64,7 +64,7 @@ namespace VehicleRentalApp.Controllers
             {
                 Id = vehicle.Id,
                 Brand = vehicle.Brand,
-                Model = vehicle.Model,
+                Name = vehicle.Name,
                 Type = vehicle.Type,
                 Year = vehicle.Year,
                 Description = vehicle.Description,
