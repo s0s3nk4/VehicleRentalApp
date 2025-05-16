@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI;
+using VehicleRentalApp.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace VehicleRentalApp
 {
@@ -8,8 +11,11 @@ namespace VehicleRentalApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<Data.AppDbContext>(options =>
+            builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<AppDbContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
