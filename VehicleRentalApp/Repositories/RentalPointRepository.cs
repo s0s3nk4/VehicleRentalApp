@@ -22,7 +22,7 @@ namespace VehicleRentalApp.Repositories
         }
         public async Task AddAsync(RentalPoint rentalPoint)
         {
-            await _context.RentalPoints.AddAsync(rentalPoint);
+            _context.RentalPoints.Add(rentalPoint);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateAsync(RentalPoint rentalPoint)

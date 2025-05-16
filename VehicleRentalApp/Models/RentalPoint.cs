@@ -6,6 +6,6 @@
         public required string Name { get; set; }
         public required string Address { get; set; }
 
-        public required ICollection<Rental> Rentals { get; set; }
+        public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
     }
 }

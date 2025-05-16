@@ -31,7 +31,7 @@ namespace VehicleRentalApp.Repositories
         }
         public async Task AddAsync(Equipment equipment)
         {
-            await _context.Equipments.AddAsync(equipment);
+            _context.Equipments.Add(equipment);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateAsync(Equipment equipment)
