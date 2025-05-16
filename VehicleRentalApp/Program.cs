@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI;
 using VehicleRentalApp.Data;
 using Microsoft.AspNetCore.Identity;
+using VehicleRentalApp.Repositories.Interfaces;
+using VehicleRentalApp.Repositories;
 
 namespace VehicleRentalApp
 {
@@ -16,6 +18,8 @@ namespace VehicleRentalApp
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppDbContext>();
+
+            builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
