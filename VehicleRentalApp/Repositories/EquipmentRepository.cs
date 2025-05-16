@@ -18,6 +18,11 @@ namespace VehicleRentalApp.Repositories
                 .Include(e => e.EquipmentType)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<EquipmentType>> GetEquipmentTypesAsync()
+        {
+            return await _context.EquipmentTypes.ToListAsync();
+        }
+
         public async Task<Equipment?> GetByIdAsync(int id)
         {
             return await _context.Equipments
@@ -42,6 +47,10 @@ namespace VehicleRentalApp.Repositories
                 _context.Equipments.Remove(equipment);
                 await _context.SaveChangesAsync();
             }
+        }
+        public async Task<bool> ExistAsync(int id)
+        {
+            return await _context.Equipments.AnyAsync(e => e.Id == id);
         }
     }
 }

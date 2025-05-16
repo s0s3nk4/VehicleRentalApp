@@ -1,9 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.UI;
-using VehicleRentalApp.Data;
 using Microsoft.AspNetCore.Identity;
-using VehicleRentalApp.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using VehicleRentalApp.Data;
 using VehicleRentalApp.Repositories;
+using VehicleRentalApp.Repositories.Interfaces;
 
 namespace VehicleRentalApp
 {

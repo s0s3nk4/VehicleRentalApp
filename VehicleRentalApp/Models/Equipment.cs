@@ -12,8 +12,8 @@
         public required string ImageUrl { get; set; }
 
         public int EquipmentTypeId { get; set; }
-        public EquipmentType? EquipmentType { get; set; } 
-        
+        public EquipmentType? EquipmentType { get; set; }
+
         public ICollection<Reservation>? Reservations { get; set; }
         public ICollection<Rental>? Rentals { get; set; }
     }
