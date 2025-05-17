@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VehicleRentalApp.Models;
 using VehicleRentalApp.Repositories.Interfaces;
+using VehicleRentalApp.ViewModels;
 
 namespace VehicleRentalApp.Controllers
 {
@@ -17,14 +18,41 @@ namespace VehicleRentalApp.Controllers
         public async Task<IActionResult> Index()
         {
             var equipments = await _equipmentRepository.GetAllAsync();
-            return View(equipments);
+
+            var viewModels = equipments.Select(e => new EquipmentItemViewModel
+            {
+                Id = e.Id,
+                Brand = e.Brand,
+                Name = e.Name,
+                Type = e.Type,
+                PricePerDay = e.PricePerDay,
+                ImageUrl = e.ImageUrl
+            }).ToList();
+
+            return View(viewModels);
         }
 
         // GET: Equipments/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var equipment = await _equipmentRepository.GetByIdAsync(id);
-            return equipment == null ? NotFound() : View(equipment);
+
+            if (equipment == null)
+                return NotFound();
+
+            var viewModel = new EquipmentDetailViewModel
+            {
+                Id = equipment.Id,
+                Brand = equipment.Brand,
+                Name = equipment.Name,
+                Type = equipment.Type,
+                Year = equipment.Year,
+                Description = equipment.Description,
+                PricePerDay = equipment.PricePerDay,
+                ImageUrl = equipment.ImageUrl
+            };
+
+            return View(viewModel);
         }
 
         // GET: Equipments/Create
