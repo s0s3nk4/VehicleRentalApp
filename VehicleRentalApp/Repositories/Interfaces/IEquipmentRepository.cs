@@ -6,6 +6,7 @@ namespace VehicleRentalApp.Repositories.Interfaces
     {
         Task<IEnumerable<Equipment>> GetAllAsync();
         Task<IEnumerable<EquipmentType>> GetEquipmentTypesAsync();
+        Task<IEnumerable<RentalPoint>> GetRentalPointsAsync();
         Task<Equipment?> GetByIdAsync(int id);
         Task AddAsync(Equipment equipment);
         Task UpdateAsync(Equipment equipment);

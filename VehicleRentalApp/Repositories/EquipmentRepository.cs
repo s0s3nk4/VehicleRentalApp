@@ -22,6 +22,10 @@ namespace VehicleRentalApp.Repositories
         {
             return await _context.EquipmentTypes.ToListAsync();
         }
+        public async Task<IEnumerable<RentalPoint>> GetRentalPointsAsync()
+        {
+            return await _context.RentalPoints.ToListAsync();
+        }
 
         public async Task<Equipment?> GetByIdAsync(int id)
         {

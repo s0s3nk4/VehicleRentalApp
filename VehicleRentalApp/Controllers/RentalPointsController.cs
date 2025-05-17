@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
 using VehicleRentalApp.Data;
 using VehicleRentalApp.Models;
+using VehicleRentalApp.Repositories;
 using VehicleRentalApp.Repositories.Interfaces;
 using VehicleRentalApp.ViewModels;
 
@@ -16,33 +18,30 @@ namespace VehicleRentalApp.Controllers
     public class RentalPointsController : Controller
     {
         private readonly IRentalPointRepository _rentalPointRepository;
-        public RentalPointsController(IRentalPointRepository rentalPointRepository)
+        private readonly IMapper _mapper;
+        public RentalPointsController(IRentalPointRepository rentalPointRepository, IMapper mapper)
         {
             _rentalPointRepository = rentalPointRepository;
+            _mapper = mapper;
         }
 
         // GET: RentalPoints
         public async Task<IActionResult> Index()
         {
-            var rentalPoints = await _rentalPointRepository.GetAllAsync();
-
-            var viewModel = rentalPoints.Select(rp => new RentalPointViewModel
-            {
-                Id = rp.Id,
-                Name = rp.Name,
-                Address = rp.Address,
-                RentalCount = rp.Rentals?.Count ?? 0
-            }).ToList();
-
-            return View(viewModel);
+            var points = await _rentalPointRepository.GetAllAsync();
+            var viewModels = _mapper.Map<List<RentalPointViewModel>>(points);
+            return View(viewModels);
         }
 
         // GET: RentalPoints/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var rentalPoint = await _rentalPointRepository.GetByIdAsync(id);
-            if (rentalPoint == null) return NotFound();
-            return View(rentalPoint);
+            var point = await _rentalPointRepository.GetByIdAsync(id);
+            if (point == null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<RentalPointViewModel>(point);
+            return View(viewModel);
         }
 
         // GET: RentalPoints/Create
@@ -56,22 +55,27 @@ namespace VehicleRentalApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address")] RentalPoint rentalPoint)
+        public async Task<IActionResult> Create([Bind("Id,Name,Address")] RentalPointViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _rentalPointRepository.AddAsync(rentalPoint);
+                var point = _mapper.Map<RentalPoint>(model);
+                await _rentalPointRepository.AddAsync(point);
                 return RedirectToAction(nameof(Index));
             }
-            return View(rentalPoint);
+
+            return View(model);
         }
 
         // GET: RentalPoints/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var rentalPoint = await _rentalPointRepository.GetByIdAsync(id);
-            if (rentalPoint == null) return NotFound();
-            return View(rentalPoint);
+            var point = await _rentalPointRepository.GetByIdAsync(id);
+            if (point == null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<RentalPointViewModel>(point);
+            return View(viewModel);
         }
 
         // POST: RentalPoints/Edit/5
@@ -79,24 +83,30 @@ namespace VehicleRentalApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address")] RentalPoint rentalPoint)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address")] RentalPointViewModel model)
         {
-            if (id != rentalPoint.Id) return NotFound();
+            if (id != model.Id)
+                return BadRequest();
 
             if (ModelState.IsValid)
             {
-                await _rentalPointRepository.UpdateAsync(rentalPoint);
+                var point = _mapper.Map<RentalPoint>(model);
+                await _rentalPointRepository.UpdateAsync(point);
                 return RedirectToAction(nameof(Index));
             }
-            return View(rentalPoint);
+
+            return View(model);
         }
 
         // GET: RentalPoints/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var rentalPoint = await _rentalPointRepository.GetByIdAsync(id);
-            if (rentalPoint == null) return NotFound();
-            return View(rentalPoint);
+            var point = await _rentalPointRepository.GetByIdAsync(id);
+            if (point == null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<RentalPointViewModel>(point);
+            return View(viewModel);
         }
 
         // POST: RentalPoints/Delete/5

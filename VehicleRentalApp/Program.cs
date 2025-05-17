@@ -19,7 +19,10 @@ namespace VehicleRentalApp
                 .AddEntityFrameworkStores<AppDbContext>();
 
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+            builder.Services.AddScoped<IEquipmentTypeRepository, EquipmentTypeRepository>();
             builder.Services.AddScoped<IRentalPointRepository, RentalPointRepository>();
+
+            builder.Services.AddAutoMapper(typeof(Program));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

@@ -2,45 +2,46 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VehicleRentalApp.Data;
 using VehicleRentalApp.Models;
+using VehicleRentalApp.Repositories;
+using VehicleRentalApp.Repositories.Interfaces;
+using VehicleRentalApp.ViewModels;
 
 namespace VehicleRentalApp.Controllers
 {
     public class EquipmentTypesController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IEquipmentTypeRepository _equipmentTypeRepository;
+        private readonly IMapper _mapper;
 
-        public EquipmentTypesController(AppDbContext context)
+        public EquipmentTypesController(IEquipmentTypeRepository equipmentTypeRepository, IMapper mapper)
         {
-            _context = context;
+            _equipmentTypeRepository = equipmentTypeRepository;
+            _mapper = mapper;
         }
 
         // GET: EquipmentTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.EquipmentTypes.ToListAsync());
+            var types = await _equipmentTypeRepository.GetAllAsync();
+            var viewModels = _mapper.Map<List<EquipmentTypeViewModel>>(types);
+            return View(viewModels);
         }
 
         // GET: EquipmentTypes/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
+            var type = await _equipmentTypeRepository.GetByIdAsync(id);
+            if (type == null)
                 return NotFound();
-            }
 
-            var equipmentType = await _context.EquipmentTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (equipmentType == null)
-            {
-                return NotFound();
-            }
-
-            return View(equipmentType);
+            var viewModel = _mapper.Map<EquipmentTypeViewModel>(type);
+            return View(viewModel);
         }
 
         // GET: EquipmentTypes/Create
@@ -54,31 +55,27 @@ namespace VehicleRentalApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] EquipmentType equipmentType)
+        public async Task<IActionResult> Create([Bind("Id,Name")] EquipmentTypeViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(equipmentType);
-                await _context.SaveChangesAsync();
+                var type = _mapper.Map<EquipmentType>(model);
+                await _equipmentTypeRepository.AddAsync(type);
                 return RedirectToAction(nameof(Index));
             }
-            return View(equipmentType);
+
+            return View(model);
         }
 
         // GET: EquipmentTypes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
+            var type = await _equipmentTypeRepository.GetByIdAsync(id);
+            if (type == null)
                 return NotFound();
-            }
 
-            var equipmentType = await _context.EquipmentTypes.FindAsync(id);
-            if (equipmentType == null)
-            {
-                return NotFound();
-            }
-            return View(equipmentType);
+            var viewModel = _mapper.Map<EquipmentTypeViewModel>(type);
+            return View(viewModel);
         }
 
         // POST: EquipmentTypes/Edit/5
@@ -86,52 +83,30 @@ namespace VehicleRentalApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] EquipmentType equipmentType)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] EquipmentTypeViewModel model)
         {
-            if (id != equipmentType.Id)
-            {
-                return NotFound();
-            }
+            if (id != model.Id)
+                return BadRequest();
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(equipmentType);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EquipmentTypeExists(equipmentType.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                var type = _mapper.Map<EquipmentType>(model);
+                await _equipmentTypeRepository.UpdateAsync(type);
                 return RedirectToAction(nameof(Index));
             }
-            return View(equipmentType);
+
+            return View(model);
         }
 
         // GET: EquipmentTypes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
+            var type = await _equipmentTypeRepository.GetByIdAsync(id);
+            if (type == null)
                 return NotFound();
-            }
 
-            var equipmentType = await _context.EquipmentTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (equipmentType == null)
-            {
-                return NotFound();
-            }
-
-            return View(equipmentType);
+            var viewModel = _mapper.Map<EquipmentTypeViewModel>(type);
+            return View(viewModel);
         }
 
         // POST: EquipmentTypes/Delete/5
@@ -139,19 +114,13 @@ namespace VehicleRentalApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var equipmentType = await _context.EquipmentTypes.FindAsync(id);
-            if (equipmentType != null)
-            {
-                _context.EquipmentTypes.Remove(equipmentType);
-            }
-
-            await _context.SaveChangesAsync();
+            await _equipmentTypeRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EquipmentTypeExists(int id)
+        private async Task<bool> RentalPointExists(int id)
         {
-            return _context.EquipmentTypes.Any(e => e.Id == id);
+            return await _equipmentTypeRepository.ExistAsync(id);
         }
     }
 }

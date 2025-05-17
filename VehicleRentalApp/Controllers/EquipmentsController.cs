@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VehicleRentalApp.Models;
 using VehicleRentalApp.Repositories.Interfaces;
@@ -8,9 +9,11 @@ namespace VehicleRentalApp.Controllers
 {
     public class EquipmentsController : Controller
     {
+        private readonly IMapper _mapper;
         private readonly IEquipmentRepository _equipmentRepository;
-        public EquipmentsController(IEquipmentRepository equipmentRepository)
+        public EquipmentsController(IEquipmentRepository equipmentRepository, IMapper mapper)
         {
+            _mapper = mapper;
             _equipmentRepository = equipmentRepository;
         }
 
@@ -18,17 +21,7 @@ namespace VehicleRentalApp.Controllers
         public async Task<IActionResult> Index()
         {
             var equipments = await _equipmentRepository.GetAllAsync();
-
-            var viewModels = equipments.Select(e => new EquipmentItemViewModel
-            {
-                Id = e.Id,
-                Brand = e.Brand,
-                Name = e.Name,
-                Type = e.Type,
-                PricePerDay = e.PricePerDay,
-                ImageUrl = e.ImageUrl
-            }).ToList();
-
+            var viewModels = _mapper.Map<List<EquipmentItemViewModel>>(equipments);
             return View(viewModels);
         }
 
@@ -36,29 +29,18 @@ namespace VehicleRentalApp.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var equipment = await _equipmentRepository.GetByIdAsync(id);
-
             if (equipment == null)
                 return NotFound();
 
-            var viewModel = new EquipmentDetailViewModel
-            {
-                Id = equipment.Id,
-                Brand = equipment.Brand,
-                Name = equipment.Name,
-                Type = equipment.Type,
-                Year = equipment.Year,
-                Description = equipment.Description,
-                PricePerDay = equipment.PricePerDay,
-                ImageUrl = equipment.ImageUrl
-            };
-
+            var viewModel = _mapper.Map<EquipmentDetailViewModel>(equipment);
             return View(viewModel);
         }
 
         // GET: Equipments/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["EquipmentTypeId"] = new SelectList(await _equipmentRepository.GetEquipmentTypesAsync(), "Id", "Id");
+            ViewData["EquipmentTypeId"] = new SelectList(await _equipmentRepository.GetEquipmentTypesAsync(), "Id", "Name");
+            ViewData["RentalPointId"] = new SelectList(await _equipmentRepository.GetRentalPointsAsync(), "Id", "Address");
             return View();
         }
 
@@ -67,21 +49,31 @@ namespace VehicleRentalApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Brand,Name,Type,Year,Description,PricePerDay,ImageUrl,EquipmentTypeId")] Equipment equipment)
+        public async Task<IActionResult> Create([Bind("Id,Brand,Name,Type,Year,Description,PricePerDay,ImageUrl,EquipmentTypeId")] EquipmentDetailViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var equipment = _mapper.Map<Equipment>(model);
                 await _equipmentRepository.AddAsync(equipment);
                 return RedirectToAction(nameof(Index));
             }
-            return View(equipment);
+
+            ViewData["EquipmentTypeId"] = new SelectList(await _equipmentRepository.GetEquipmentTypesAsync(), "Id", "Name", model.EquipmentTypeId);
+            ViewData["RentalPointId"] = new SelectList(await _equipmentRepository.GetRentalPointsAsync(), "Id", "Address", model.RentalPointId);
+            return View(model);
         }
 
         // GET: Equipments/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var equipment = await _equipmentRepository.GetByIdAsync(id);
-            return equipment == null ? NotFound() : View(equipment);
+            if (equipment == null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<EquipmentDetailViewModel>(equipment);
+            ViewData["EquipmentTypeId"] = new SelectList(await _equipmentRepository.GetEquipmentTypesAsync(), "Id", "Name", viewModel.EquipmentTypeId);
+            ViewData["RentalPointId"] = new SelectList(await _equipmentRepository.GetRentalPointsAsync(), "Id", "Address", viewModel.RentalPointId);
+            return View(viewModel);
         }
 
         // POST: Equipments/Edit/5
@@ -89,23 +81,32 @@ namespace VehicleRentalApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Brand,Name,Type,Year,Description,PricePerDay,ImageUrl,EquipmentTypeId")] Equipment equipment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Brand,Name,Type,Year,Description,PricePerDay,ImageUrl,EquipmentTypeId")] EquipmentDetailViewModel model)
         {
-            if (id != equipment.Id) return BadRequest();
+            if (id != model.Id)
+                return BadRequest();
+
             if (ModelState.IsValid)
             {
+                var equipment = _mapper.Map<Equipment>(model);
                 await _equipmentRepository.UpdateAsync(equipment);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EquipmentTypeId"] = new SelectList(await _equipmentRepository.GetEquipmentTypesAsync(), "Id", "Id", equipment.EquipmentTypeId);
-            return View(equipment);
+
+            ViewData["EquipmentTypeId"] = new SelectList(await _equipmentRepository.GetEquipmentTypesAsync(), "Id", "Name", model.EquipmentTypeId);
+            ViewData["RentalPointId"] = new SelectList(await _equipmentRepository.GetRentalPointsAsync(), "Id", "Address", model.RentalPointId);
+            return View(model);
         }
 
         // GET: Equipments/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var equipment = await _equipmentRepository.GetByIdAsync(id);
-            return equipment == null ? NotFound() : View(equipment);
+            if (equipment == null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<EquipmentDetailViewModel>(equipment);
+            return View(viewModel);
         }
 
         // POST: Equipments/Delete/5

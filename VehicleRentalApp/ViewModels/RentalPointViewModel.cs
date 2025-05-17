@@ -6,9 +6,9 @@ namespace VehicleRentalApp.ViewModels
     {
         public int Id { get; set; }
         [Display(Name = "Nazwa punktu")]
-        public required string Name { get; set; }
+        public string? Name { get; set; }
         [Display(Name = "Adres")]
-        public required string Address { get; set; }
+        public string? Address { get; set; }
         [Display(Name = "Liczba wypożyczeń")]
         public int RentalCount { get; set; }
     }
