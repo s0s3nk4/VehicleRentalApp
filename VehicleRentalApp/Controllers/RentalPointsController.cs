@@ -9,6 +9,7 @@ using NuGet.Protocol.Core.Types;
 using VehicleRentalApp.Data;
 using VehicleRentalApp.Models;
 using VehicleRentalApp.Repositories.Interfaces;
+using VehicleRentalApp.ViewModels;
 
 namespace VehicleRentalApp.Controllers
 {
@@ -23,8 +24,17 @@ namespace VehicleRentalApp.Controllers
         // GET: RentalPoints
         public async Task<IActionResult> Index()
         {
-            var points = await _rentalPointRepository.GetAllAsync();
-            return View(points);
+            var rentalPoints = await _rentalPointRepository.GetAllAsync();
+
+            var viewModel = rentalPoints.Select(rp => new RentalPointViewModel
+            {
+                Id = rp.Id,
+                Name = rp.Name,
+                Address = rp.Address,
+                RentalCount = rp.Rentals?.Count ?? 0
+            }).ToList();
+
+            return View(viewModel);
         }
 
         // GET: RentalPoints/Details/5
