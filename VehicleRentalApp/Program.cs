@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using VehicleRentalApp.Data;
 using VehicleRentalApp.Repositories;
 using VehicleRentalApp.Repositories.Interfaces;
+using VehicleRentalApp.Areas.Identity.Data;
 
 namespace VehicleRentalApp
 {
@@ -14,10 +15,21 @@ namespace VehicleRentalApp
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseInMemoryDatabase("TestDatabase"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+            //options.UseInMemoryDatabase("TestDatabase"));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
 
             builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
             builder.Services.AddScoped<IEquipmentTypeRepository, EquipmentTypeRepository>();

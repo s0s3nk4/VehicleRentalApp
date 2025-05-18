@@ -4,7 +4,7 @@ using VehicleRentalApp.Models;
 
 namespace VehicleRentalApp.Data
 {
-    public class AppDbContext : IdentityDbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -44,7 +44,7 @@ namespace VehicleRentalApp.Data
                 .HasOne(r => r.RentalPoint)
                 .WithMany(rp => rp.Rentals)
                 .HasForeignKey(r => r.RentalPointId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
